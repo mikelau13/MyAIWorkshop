@@ -19,7 +19,11 @@ namespace AIConsole.Vision
                 {
                     try
                     {
-                        return await this.visionClient.AnalyzeImageAsync(imageFileStream, visualFeatures);
+                        return await this.visionClient.AnalyzeImageAsync(imageFileStream, new VisualFeature[] {
+                                        VisualFeature.Adult, //recognize adult content
+                                        VisualFeature.Categories, //recognize image features
+                                        VisualFeature.Description //generate image caption
+                                        });
                     }
                     catch (Exception e)
                     {

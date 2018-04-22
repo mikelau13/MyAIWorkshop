@@ -173,6 +173,10 @@ namespace CSHttpClientSample
                 Console.WriteLine("OCR result: ");
                 Console.WriteLine(imageCaption);
             }
+            else
+            {
+                Console.WriteLine("OCR FAILED");
+            }
             Console.WriteLine("\n");
         }
 

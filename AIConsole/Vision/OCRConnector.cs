@@ -18,7 +18,8 @@ namespace AIConsole.Vision
                 {
                     try
                     {
-                        return await this.visionClient.RecognizeTextAsync(imageFileStream);
+                        //return await this.visionClient.RecognizeTextAsync(imageFileStream);
+                        return await this.visionClient.RecognizeTextAsync("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwhxtGtb1gvPiXbBE5OsJ6xe2eDSeOZCZUTgZbI-U2yP-bhQl0_g");
                     }
                     catch (Exception e)
                     {

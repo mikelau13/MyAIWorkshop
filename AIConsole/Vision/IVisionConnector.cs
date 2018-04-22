@@ -8,7 +8,7 @@ namespace AIConsole.Vision
     {
         Task<T> AnalizeImage(string localFileAbsolutePath);
 
-        VisualFeature[] getVisualFeatures();
+        //VisualFeature[] getVisualFeatures();
 
         VisionServiceClient getVisionClient();
     }

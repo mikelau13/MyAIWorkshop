@@ -17,16 +17,16 @@ namespace AIConsole.Vision
 
         protected VisionServiceClient visionClient;
 
-        protected VisualFeature[] visualFeatures = new VisualFeature[] {
-                                        VisualFeature.Adult, //recognize adult content
-                                        VisualFeature.Categories, //recognize image features
-                                        VisualFeature.Description //generate image caption
-                                        };
+        //protected VisualFeature[] visualFeatures = new VisualFeature[] {
+        //                                VisualFeature.Adult, //recognize adult content
+        //                                VisualFeature.Categories, //recognize image features
+        //                                VisualFeature.Description //generate image caption
+        //                                };
 
-        public virtual VisualFeature[] getVisualFeatures()
-        {
-            return visualFeatures;
-        }
+        //public virtual VisualFeature[] getVisualFeatures()
+        //{
+        //    return visualFeatures;
+        //}
 
         public virtual VisionServiceClient getVisionClient()
         {
