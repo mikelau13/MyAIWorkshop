@@ -4,11 +4,9 @@ using System.Threading.Tasks;
 
 namespace AIConsole.Vision
 {
-    public interface IVisionConnector
+    public interface IVisionConnector<T>
     {
-        string UriPath { get; }
-
-        Task<AnalysisResult> AnalizeImage(string localFileAbsolutePath);
+        Task<T> AnalizeImage(string localFileAbsolutePath);
 
         VisualFeature[] getVisualFeatures();
 

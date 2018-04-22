@@ -1,25 +1,24 @@
 ﻿using System;
-using Microsoft.ProjectOxford.Vision;
 using Microsoft.ProjectOxford.Vision.Contract;
 using System.Threading.Tasks;
-using System.Web;
 using System.IO;
 
 namespace AIConsole.Vision
 {
-    public class VisionConnector : VisionConnectorBase, IVisionConnector<AnalysisResult>
+    public class OCRConnector : VisionConnectorBase, IVisionConnector<OcrResults>
     {
-        public VisionConnector() : base("/vision/v1.0") { }
+        public OCRConnector() : base("/vision/v1.0/ocr") { }
 
-        public async Task<AnalysisResult> AnalizeImage(string imgLocalFileAbsolutePath)
+        public async Task<OcrResults> AnalizeImage(string imgLocalFileAbsolutePath)
         {
+            //If the user uploaded an image, read it, and send it to the Vision API
             if (File.Exists(imgLocalFileAbsolutePath))
             {
                 using (Stream imageFileStream = File.OpenRead(imgLocalFileAbsolutePath))
                 {
                     try
                     {
-                        return await this.visionClient.AnalyzeImageAsync(imageFileStream, visualFeatures);
+                        return await this.visionClient.RecognizeTextAsync(imageFileStream);
                     }
                     catch (Exception e)
                     {
@@ -27,14 +26,11 @@ namespace AIConsole.Vision
                     }
                 }
             }
+            //Else, if the user did not upload an image, determine if the message contains a url, and send it to the Vision API
             else
             {
                 return null; //on error, reset analysis result to null
             }
         }
-
-
-
-
     }
 }

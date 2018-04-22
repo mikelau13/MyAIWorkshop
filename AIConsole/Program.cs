@@ -156,6 +156,27 @@ namespace CSHttpClientSample
         /// Gets the text visible in the specified image file by using the Computer Vision REST API.
         /// </summary>
         /// <param name="imageFilePath">The image file.</param>
+        static async void MakeOCRRequest2(string imageFilePath)
+        {
+            // Request parameters. A third optional parameter is "details".
+            string requestParameters = "language=unk&detectOrientation=true";
+
+            //HttpResponseMessage response;
+
+            IVisionConnector<OcrResults> connector = new OCRConnector();
+            OcrResults analysisResult = await connector.AnalizeImage(imageFilePath);
+
+            if (analysisResult != null)
+            {
+                string imageCaption = analysisResult.Orientation;
+
+                Console.WriteLine("OCR result: ");
+                Console.WriteLine(imageCaption);
+            }
+            Console.WriteLine("\n");
+        }
+
+
         static async void MakeOCRRequest(string imageFilePath)
         {
             HttpClient client = new HttpClient();
@@ -187,7 +208,7 @@ namespace CSHttpClientSample
                 string contentString = await response.Content.ReadAsStringAsync();
 
                 // Display the JSON response.
-                Console.WriteLine("\nOCR Response:\n");
+                Console.WriteLine("\nResponse:\n");
                 Console.WriteLine(JsonPrettyPrint(contentString));
             }
         }
