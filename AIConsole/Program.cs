@@ -40,6 +40,8 @@ namespace CSHttpClientSample
             // Execute the REST API call.
             MakeAnalysisRequest(imageFilePath);
             MakeThumbNailRequest(imageFilePath);
+            MakeOCRRequest(imageFilePath);
+
 
             Console.WriteLine("\nPlease wait a moment for the results to appear. Then, press Enter to exit...\n");
             Console.ReadLine();
@@ -134,7 +136,7 @@ namespace CSHttpClientSample
                 if (response.IsSuccessStatusCode)
                 {
                     // Display the response data.
-                    Console.WriteLine("\nResponse:\n");
+                    Console.WriteLine("\nThumbnail Response:\n");
                     Console.WriteLine(response);
 
                     // Get the image data.
@@ -146,6 +148,47 @@ namespace CSHttpClientSample
                     Console.WriteLine("\nError:\n");
                     Console.WriteLine(JsonPrettyPrint(await response.Content.ReadAsStringAsync()));
                 }
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the text visible in the specified image file by using the Computer Vision REST API.
+        /// </summary>
+        /// <param name="imageFilePath">The image file.</param>
+        static async void MakeOCRRequest(string imageFilePath)
+        {
+            HttpClient client = new HttpClient();
+
+            // Request headers.
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
+
+            // Request parameters.
+            string requestParameters = "language=unk&detectOrientation=true";
+
+            // Assemble the URI for the REST API Call.
+            string uri = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/ocr" + "?" + requestParameters;
+
+            HttpResponseMessage response;
+
+            // Request body. Posts a locally stored JPEG image.
+            byte[] byteData = GetImageAsByteArray(imageFilePath);
+
+            using (ByteArrayContent content = new ByteArrayContent(byteData))
+            {
+                // This example uses content type "application/octet-stream".
+                // The other content types you can use are "application/json" and "multipart/form-data".
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+                // Execute the REST API call.
+                response = await client.PostAsync(uri, content);
+
+                // Get the JSON response.
+                string contentString = await response.Content.ReadAsStringAsync();
+
+                // Display the JSON response.
+                Console.WriteLine("\nOCR Response:\n");
+                Console.WriteLine(JsonPrettyPrint(contentString));
             }
         }
 
