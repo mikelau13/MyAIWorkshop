@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AIConsole.Vision;
+using Microsoft.ProjectOxford.Vision.Contract;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +27,7 @@ namespace CSHttpClientSample
         //
         // NOTE: Free trial subscription keys are generated in the westcentralus region, so if you are using
         // a free trial subscription key, you should not need to change this region.
-        const string uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0";
+        const string uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/analyze";
 
 
         static void Main()
@@ -37,6 +39,7 @@ namespace CSHttpClientSample
 
             // Execute the REST API call.
             MakeAnalysisRequest(imageFilePath);
+            MakeThumbNailRequest(imageFilePath);
 
             Console.WriteLine("\nPlease wait a moment for the results to appear. Then, press Enter to exit...\n");
             Console.ReadLine();
@@ -56,12 +59,25 @@ namespace CSHttpClientSample
 
             // Request parameters. A third optional parameter is "details".
             string requestParameters = "visualFeatures=Categories,Description,Color&language=en";
+            //string requestParameters = "model=landmarks"; // landmarks, celebrities, etc
 
             // Assemble the URI for the REST API Call.
             string uri = uriBase + "?" + requestParameters;
 
-            HttpResponseMessage response;
+            //HttpResponseMessage response;
 
+            VisionConnector connector = new VisionConnector();
+            AnalysisResult analysisResult = await connector.AnalizeImage(imageFilePath);
+
+            if (analysisResult != null)
+            {
+                string imageCaption = analysisResult.Description.Captions[0].Text;
+
+                Console.WriteLine("This is ");
+                Console.WriteLine(imageCaption);
+            }
+            Console.WriteLine("\n");
+            /*
             // Request body. Posts a locally stored JPEG image.
             byte[] byteData = GetImageAsByteArray(imageFilePath);
 
@@ -80,6 +96,56 @@ namespace CSHttpClientSample
                 // Display the JSON response.
                 Console.WriteLine("\nResponse:\n");
                 Console.WriteLine(JsonPrettyPrint(contentString));
+            }*/
+        }
+
+
+        /// <summary>
+        /// Gets a thumbnail image from the specified image file by using the Computer Vision REST API.
+        /// </summary>
+        /// <param name="imageFilePath">The image file to use to create the thumbnail image.</param>
+        static async void MakeThumbNailRequest(string imageFilePath)
+        {
+            HttpClient client = new HttpClient();
+
+            // Request headers.
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
+
+            // Request parameters.
+            string requestParameters = "width=200&height=150&smartCropping=true";
+
+            // Assemble the URI for the REST API Call.
+            string uri = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/generateThumbnail" + "?" + requestParameters;
+
+            HttpResponseMessage response;
+
+            // Request body. Posts a locally stored JPEG image.
+            byte[] byteData = GetImageAsByteArray(imageFilePath);
+
+            using (ByteArrayContent content = new ByteArrayContent(byteData))
+            {
+                // This example uses content type "application/octet-stream".
+                // The other content types you can use are "application/json" and "multipart/form-data".
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+                // Execute the REST API call.
+                response = await client.PostAsync(uri, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Display the response data.
+                    Console.WriteLine("\nResponse:\n");
+                    Console.WriteLine(response);
+
+                    // Get the image data.
+                    byte[] thumbnailImageData = await response.Content.ReadAsByteArrayAsync();
+                }
+                else
+                {
+                    // Display the JSON error data.
+                    Console.WriteLine("\nError:\n");
+                    Console.WriteLine(JsonPrettyPrint(await response.Content.ReadAsStringAsync()));
+                }
             }
         }
 
@@ -95,6 +161,7 @@ namespace CSHttpClientSample
             BinaryReader binaryReader = new BinaryReader(fileStream);
             return binaryReader.ReadBytes((int)fileStream.Length);
         }
+
 
 
         /// <summary>
