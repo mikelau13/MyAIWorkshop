@@ -15,7 +15,7 @@ namespace ArticleDigestWorkshop.Sql
             List<ArticlePOCO> result = new List<ArticlePOCO>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                string query = @"SELECT TOP 300 Title, SubTitle, Abstract, Body
+                string query = @"SELECT TOP 3 Title, SubTitle, Abstract, Body
                     FROM [AR_CZuza].[z_asset].[Article] art
                     INNER JOIN [AR_CZuza].[z_asset].[Asset] ass ON art.AssetId = ass.AssetId
                     WHERE PublishFromDate > '2018-04-01'

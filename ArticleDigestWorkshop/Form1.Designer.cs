@@ -32,6 +32,9 @@
             this._lblResult = new System.Windows.Forms.Label();
             this._txtConnectStr = new System.Windows.Forms.TextBox();
             this._btnAnalyze = new System.Windows.Forms.Button();
+            this._txtSavePath = new System.Windows.Forms.TextBox();
+            this._pnlAnalyze = new System.Windows.Forms.Panel();
+            this._pnlAnalyze.SuspendLayout();
             this.SuspendLayout();
             // 
             // _btnLoadArticles
@@ -64,27 +67,46 @@
             // 
             // _btnAnalyze
             // 
-            this._btnAnalyze.Location = new System.Drawing.Point(710, 41);
+            this._btnAnalyze.Location = new System.Drawing.Point(626, 43);
             this._btnAnalyze.Name = "_btnAnalyze";
-            this._btnAnalyze.Size = new System.Drawing.Size(76, 24);
+            this._btnAnalyze.Size = new System.Drawing.Size(142, 24);
             this._btnAnalyze.TabIndex = 4;
-            this._btnAnalyze.Text = "Analyze";
+            this._btnAnalyze.Text = "Analyze & Save";
             this._btnAnalyze.UseVisualStyleBackColor = true;
-            this._btnAnalyze.Visible = false;
             this._btnAnalyze.Click += new System.EventHandler(this._btnAnalyze_Click);
+            // 
+            // _txtSavePath
+            // 
+            this._txtSavePath.Location = new System.Drawing.Point(6, 47);
+            this._txtSavePath.Name = "_txtSavePath";
+            this._txtSavePath.Size = new System.Drawing.Size(588, 20);
+            this._txtSavePath.TabIndex = 5;
+            this._txtSavePath.Text = "C:\\Users\\mlau\\Desktop\\Metroland\\MBO\\2018\\5 10\\Google Search";
+            // 
+            // _pnlAnalyze
+            // 
+            this._pnlAnalyze.Controls.Add(this._txtSavePath);
+            this._pnlAnalyze.Controls.Add(this._btnAnalyze);
+            this._pnlAnalyze.Location = new System.Drawing.Point(20, 82);
+            this._pnlAnalyze.Name = "_pnlAnalyze";
+            this._pnlAnalyze.Size = new System.Drawing.Size(770, 209);
+            this._pnlAnalyze.TabIndex = 7;
+            this._pnlAnalyze.Visible = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this._btnAnalyze);
+            this.Controls.Add(this._pnlAnalyze);
             this.Controls.Add(this._txtConnectStr);
             this.Controls.Add(this._lblResult);
             this.Controls.Add(this._btnLoadArticles);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this._pnlAnalyze.ResumeLayout(false);
+            this._pnlAnalyze.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -95,6 +117,8 @@
         private System.Windows.Forms.Label _lblResult;
         private System.Windows.Forms.TextBox _txtConnectStr;
         private System.Windows.Forms.Button _btnAnalyze;
+        private System.Windows.Forms.TextBox _txtSavePath;
+        private System.Windows.Forms.Panel _pnlAnalyze;
     }
 }
 

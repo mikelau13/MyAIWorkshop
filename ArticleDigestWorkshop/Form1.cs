@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using ArticleDigestWorkshop.CognitiveServices.TextAnalysticsApi;
+using ArticleDigestWorkshop.CognitiveServices;
+using System.Text.RegularExpressions;
 
 namespace ArticleDigestWorkshop
 {
@@ -33,19 +35,45 @@ namespace ArticleDigestWorkshop
             if (ArticleList.Count > 0)
             {
                 _lblResult.Text = "Successfully read " + ArticleList.Count.ToString() + " lines from the excel file.";
-                _btnAnalyze.Visible = true;
+                _pnlAnalyze.Visible = true;
             }
             else
             {
                 _lblResult.Text = "No records.";
-                _btnAnalyze.Visible = false;
+                _pnlAnalyze.Visible = false;
             }
         }
 
         private void _btnAnalyze_Click(object sender, EventArgs e)
         {
             TextAnalysticsConnector textAnalyze = new TextAnalysticsConnector();
-            textAnalyze.Analyze(ArticleList[0].Title, ArticleList[0].Body);
+
+            List<AnalyzeResult> results = new List<AnalyzeResult>();
+
+            for (int i = 0; i < ArticleList.Count; i++)
+            {
+                TextAnalysticsRequestPOCO thisRequest = new TextAnalysticsRequestPOCO();
+                thisRequest.Documents.Add(new TextAnalysticsRequestDocument { Language = "en", Id = "1", Text = Regex.Replace(ArticleList[i].Title, "<.*?>", String.Empty) });
+                thisRequest.Documents.Add(new TextAnalysticsRequestDocument { Language = "en", Id = "2", Text = Regex.Replace(ArticleList[i].Body, "<.*?>", String.Empty) });
+
+                results.Add(new AnalyzeResult {
+                    RequestObject = thisRequest
+                    , ResponseObject = textAnalyze.Analyze(thisRequest)
+                });
+            }
+
+            string requestBody = Newtonsoft.Json.JsonConvert.SerializeObject(results);
+            string savePath = _txtSavePath.Text.Trim() + "/" + DateTime.Now.ToString("yyyyMMddhhmmssms") + ".json";
+
+            if (!System.IO.File.Exists(savePath))
+            {
+                System.IO.File.WriteAllText(savePath, requestBody);
+                _lblResult.Text = "Save succeed.";
+            }
+            else
+            {
+                _lblResult.Text = "Failed to save the result.";
+            }
         }
     }
 }

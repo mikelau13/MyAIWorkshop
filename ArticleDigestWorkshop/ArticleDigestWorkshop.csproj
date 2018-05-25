@@ -51,12 +51,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArticlePOCO.cs" />
+    <Compile Include="CognitiveServices\AnalyzeResult.cs" />
     <Compile Include="CognitiveServices\IRequestPOCO.cs" />
     <Compile Include="CognitiveServices\IResponsePOCO.cs" />
     <Compile Include="CognitiveServices\MSCSConnectorBase.cs" />
     <Compile Include="CognitiveServices\TextAnalysticsApi\TextAnalysticsApiConfig.cs" />
     <Compile Include="CognitiveServices\TextAnalysticsApi\TextAnalysticsConnector.cs" />
     <Compile Include="CognitiveServices\TextAnalysticsApi\TextAnalysticsRequestPOCO.cs" />
+    <Compile Include="CognitiveServices\TextAnalysticsApi\TextAnalysticsResponsePOCO.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

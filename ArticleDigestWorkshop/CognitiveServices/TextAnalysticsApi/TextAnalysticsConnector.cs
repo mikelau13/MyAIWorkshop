@@ -10,13 +10,9 @@ namespace ArticleDigestWorkshop.CognitiveServices.TextAnalysticsApi
     {
         private TextAnalysticsApiConfig _config = TextAnalysticsApiConfig.GetInstance;
 
-        public string Analyze(string title, string articleContent)
+        public TextAnalysticsResponsePOCO Analyze(TextAnalysticsRequestPOCO request)
         {
-            TextAnalysticsRequestPOCO requestO = new TextAnalysticsRequestPOCO();
-            requestO.Documents.Add(new TextAnalysticsDocument { Language="en", Id="1", Text= title });
-            requestO.Documents.Add(new TextAnalysticsDocument { Language = "en", Id = "2", Text = articleContent });
-
-            return (string)Newtonsoft.Json.JsonConvert.DeserializeObject(base.CallApi(_config, requestO), typeof(string));
+            return (TextAnalysticsResponsePOCO)Newtonsoft.Json.JsonConvert.DeserializeObject(base.CallApi(_config, request), typeof(TextAnalysticsResponsePOCO));
         }
     }
 }

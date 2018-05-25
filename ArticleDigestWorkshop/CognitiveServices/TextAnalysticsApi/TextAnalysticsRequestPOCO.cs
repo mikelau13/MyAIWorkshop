@@ -7,15 +7,15 @@ namespace ArticleDigestWorkshop.CognitiveServices.TextAnalysticsApi
     {
         public TextAnalysticsRequestPOCO()
         {
-            Documents = new List<TextAnalysticsDocument>();
+            Documents = new List<TextAnalysticsRequestDocument>();
         }
 
         [JsonProperty("documents")]
-        public List<TextAnalysticsDocument> Documents { get; set; }
+        public List<TextAnalysticsRequestDocument> Documents { get; set; }
     }
 
 
-    public class TextAnalysticsDocument
+    public class TextAnalysticsRequestDocument
     {
         [JsonProperty("language")]
         public string Language { get; set; }
