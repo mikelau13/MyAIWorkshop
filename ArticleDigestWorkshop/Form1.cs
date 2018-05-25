@@ -62,17 +62,31 @@ namespace ArticleDigestWorkshop
                 });
             }
 
-            string requestBody = Newtonsoft.Json.JsonConvert.SerializeObject(results);
-            string savePath = _txtSavePath.Text.Trim() + "/" + DateTime.Now.ToString("yyyyMMddhhmmssms") + ".json";
+            SaveAnalyzeResult(results);
+        }
 
-            if (!System.IO.File.Exists(savePath))
+
+        private void SaveAnalyzeResult(List<AnalyzeResult> resultToSave)
+        {
+            string requestBody = Newtonsoft.Json.JsonConvert.SerializeObject(resultToSave);
+
+            if (System.IO.Directory.Exists(_txtSavePath.Text.Trim()))
             {
-                System.IO.File.WriteAllText(savePath, requestBody);
-                _lblResult.Text = "Save succeed.";
+                string savePath = _txtSavePath.Text.Trim() + "/" + DateTime.Now.ToString("yyyyMMddhhmmssms") + ".json";
+
+                if (!System.IO.File.Exists(savePath))
+                {
+                    System.IO.File.WriteAllText(savePath, requestBody);
+                    _lblResult.Text = "Save succeed.";
+                }
+                else
+                {
+                    _lblResult.Text = "Failed to save the result.";
+                }
             }
             else
             {
-                _lblResult.Text = "Failed to save the result.";
+                _lblResult.Text = "Folder does not exist.";
             }
         }
     }
