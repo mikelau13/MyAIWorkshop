@@ -20,7 +20,12 @@ namespace ArticleDigestWorkshop.Sql
                     INNER JOIN [AR_CZuza].[z_asset].[Asset] ass ON art.AssetId = ass.AssetId
                     WHERE PublishFromDate > '2018-04-01'
                         AND Title <> 'test'
-                        AND SubTitle IS NOT NULL";
+                        AND SubTitle IS NOT NULL
+                        AND AssetTypeId = 2 
+                        AND AssetStatusId = 3
+                        AND art.assetId > 7012394
+                        AND PrimaryCategoryId = 2
+                        AND Abstract <> ''";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
 

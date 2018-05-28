@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ArticleDigestWorkshop.CognitiveServices.TextAnalysticsApi;
-using ArticleDigestWorkshop.CognitiveServices;
-using ArticleDigestWorkshop.GoogleApi;
 using System.Text.RegularExpressions;
-using ArticleDigestWorkshop.GoogleApi.CustomSearch;
+using ArticleDigestWorkshop.BingApi.CustomSearch;
 
 namespace ArticleDigestWorkshop
 {
@@ -43,7 +41,7 @@ namespace ArticleDigestWorkshop
         {
             TextAnalysticsConnector textAnalyze = new TextAnalysticsConnector();
 
-            List<GoogleApi.AnalyzeResult> results = new List<GoogleApi.AnalyzeResult>();
+            List<BingApi.AnalyzeResult> results = new List<BingApi.AnalyzeResult>();
 
             for (int i = 0; i < ArticleList.Count; i++)
             {
@@ -59,43 +57,198 @@ namespace ArticleDigestWorkshop
                     ResponseObject = txtAnaResponse
                 };
 
-                // ----------- Google Custom Search
+                // ----------- Custom Search
 
-                CustomSearchConnector googleCustomSearch = new CustomSearchConnector();
+                CustomSearchConnector customSearch = new CustomSearchConnector();
 
-                string searchQ = googleCustomSearch.SearchQueryFromKeyPhrase(((TextAnalysticsResponsePOCO)textAnalysticsResult.ResponseObject).Documents);
+                string searchQ = customSearch.SearchQueryFromKeyPhrase(((TextAnalysticsResponsePOCO)textAnalysticsResult.ResponseObject).Documents);
                 CustomSearchRequestPOCO csRequest = new CustomSearchRequestPOCO();
                 csRequest.Query = searchQ;
-                csRequest.Num = 10;
-                csRequest.SiteSearch = "www.therecord.com"; // let's just hardcoding for now for testing purpose
 
-                CustomSearchResponsePOCO customSearchResponse = googleCustomSearch.DoCustomSearch(csRequest);
+                CustomSearchResponsePOCO customSearchResponse = customSearch.DoCustomSearch(csRequest);
+
+                System.Threading.Thread.Sleep(1000);
 
                 //------------
 
-                results.Add(new GoogleApi.AnalyzeResult
+                results.Add(new BingApi.AnalyzeResult
                 {
                     CognitiveResult = textAnalysticsResult,
                     ResponseObject = customSearchResponse
                 });
             }
 
-            SaveAnalyzeResult(results);
+            SaveResult(results);
         }
 
 
-        private void SaveAnalyzeResult(List<GoogleApi.AnalyzeResult> resultToSave)
+        private void SaveResult(List<BingApi.AnalyzeResult> results)
+        {
+            string fileName = DateTime.Now.ToString("yyyyMMddhhmmssms");
+
+            SaveAnalyzeResult(fileName, results);
+            GenerateHtmlFromAnalyzeResult(fileName, results);
+        }
+
+
+
+        private void GenerateHtmlFromAnalyzeResult(string fileName, List<BingApi.AnalyzeResult> resultToGenerate)
+        {
+            string templateRow = "<tr><td valign='top' width='20%'>{0}</td><td width='40%'><textarea rows='10' cols='80'>{1}</textarea></td><td valign='top' width='40%'>{2}</td></tr>";
+            string templateEachResult = "<a href='{0}'>{1}</a><br/>";
+
+            string allRow = "";
+
+            for (int i = 0; i < resultToGenerate.Count; i++)
+            {
+                BingApi.AnalyzeResult each = resultToGenerate[i];
+
+                string originalTitle = ((TextAnalysticsRequestPOCO)each.CognitiveResult.RequestObject).Documents[0].Text;
+                string originalBody = ((TextAnalysticsRequestPOCO)each.CognitiveResult.RequestObject).Documents[1].Text;
+
+                string searchedEach = "";
+
+                if (each.ResponseObject != null && each.ResponseObject.WebPages.Items != null)
+                {
+                    for (int j = 0; j < each.ResponseObject.WebPages.Items.Count; j++)
+                    {
+                        searchedEach += (String.Format(templateEachResult, each.ResponseObject.WebPages.Items[j].Link, each.ResponseObject.WebPages.Items[j].Title));
+                    }
+                }
+                else
+                {
+                    searchedEach = "NULL";
+                }
+                allRow += String.Format(templateRow, originalTitle, originalBody, searchedEach);
+            }
+
+            string html = String.Format("<html><body><table border=1>{0}</table></body></html>", allRow);
+
+
+            if (System.IO.Directory.Exists(_txtSavePath.Text.Trim()))
+            {
+                string savePath = _txtSavePath.Text.Trim() + "/" + fileName + ".html";
+
+                if (!System.IO.File.Exists(savePath))
+                {
+                    System.IO.File.WriteAllText(savePath, html);
+                    _lblResult.Text = "Html Save succeed.";
+                }
+                else
+                {
+                    _lblResult.Text = "Failed to save the result.";
+                }
+            }
+            else
+            {
+                _lblResult.Text = "Folder does not exist.";
+            }
+        }
+
+
+        private void SaveAnalyzeResult(string fileName, List<BingApi.AnalyzeResult> resultToSave)
         {
             string requestBody = Newtonsoft.Json.JsonConvert.SerializeObject(resultToSave);
 
             if (System.IO.Directory.Exists(_txtSavePath.Text.Trim()))
             {
-                string savePath = _txtSavePath.Text.Trim() + "/" + DateTime.Now.ToString("yyyyMMddhhmmssms") + ".json";
+                string savePath = _txtSavePath.Text.Trim() + "/" + fileName + ".json";
 
                 if (!System.IO.File.Exists(savePath))
                 {
                     System.IO.File.WriteAllText(savePath, requestBody);
-                    _lblResult.Text = "Save succeed.";
+                    _lblResult.Text = "Json Save succeed.";
+                }
+                else
+                {
+                    _lblResult.Text = "Failed to save the result.";
+                }
+            }
+            else
+            {
+                _lblResult.Text = "Folder does not exist.";
+            }
+        }
+
+
+
+
+
+        private void SaveResult (List<GoogleApi.AnalyzeResult> results)
+        {
+            string fileName = DateTime.Now.ToString("yyyyMMddhhmmssms");
+
+            SaveAnalyzeResult(fileName, results);
+            GenerateHtmlFromAnalyzeResult(fileName, results);
+        }
+
+
+        private void GenerateHtmlFromAnalyzeResult(string fileName, List<GoogleApi.AnalyzeResult> resultToGenerate)
+        {
+            string templateRow = "<tr><td valign='top' width='20%'>{0}</td><td width='40%'><textarea rows='10' cols='80'>{1}</textarea></td><td valign='top' width='40%'>{2}</td></tr>";
+            string templateEachResult = "<a href='{0}'>{1}</a><br/>";
+
+            string allRow = "";
+
+            for (int i = 0; i < resultToGenerate.Count; i++)
+            {
+                GoogleApi.AnalyzeResult each = resultToGenerate[i];
+
+                string originalTitle = ((TextAnalysticsRequestPOCO)each.CognitiveResult.RequestObject).Documents[0].Text;
+                string originalBody = ((TextAnalysticsRequestPOCO)each.CognitiveResult.RequestObject).Documents[1].Text;
+
+                string searchedEach = "";
+
+                if (each.ResponseObject != null && each.ResponseObject.Items != null)
+                {
+                    for (int j = 0; j < each.ResponseObject.Items.Count; j++)
+                    {
+                        searchedEach += (String.Format(templateEachResult, each.ResponseObject.Items[j].Link, each.ResponseObject.Items[j].Title));
+                    }
+                }
+                else
+                {
+                    searchedEach = "NULL";
+                }
+                allRow += String.Format(templateRow, originalTitle, originalBody, searchedEach);
+            }
+
+            string html = String.Format("<html><body><table border=1>{0}</table></body></html>", allRow);
+
+
+            if (System.IO.Directory.Exists(_txtSavePath.Text.Trim()))
+            {
+                string savePath = _txtSavePath.Text.Trim() + "/" + fileName + ".html";
+
+                if (!System.IO.File.Exists(savePath))
+                {
+                    System.IO.File.WriteAllText(savePath, html);
+                    _lblResult.Text = "Html Save succeed.";
+                }
+                else
+                {
+                    _lblResult.Text = "Failed to save the result.";
+                }
+            }
+            else
+            {
+                _lblResult.Text = "Folder does not exist.";
+            }
+        }
+
+
+        private void SaveAnalyzeResult(string fileName, List<GoogleApi.AnalyzeResult> resultToSave)
+        {
+            string requestBody = Newtonsoft.Json.JsonConvert.SerializeObject(resultToSave);
+
+            if (System.IO.Directory.Exists(_txtSavePath.Text.Trim()))
+            {
+                string savePath = _txtSavePath.Text.Trim() + "/" + fileName + ".json";
+
+                if (!System.IO.File.Exists(savePath))
+                {
+                    System.IO.File.WriteAllText(savePath, requestBody);
+                    _lblResult.Text = "Json Save succeed.";
                 }
                 else
                 {

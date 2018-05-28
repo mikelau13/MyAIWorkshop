@@ -51,6 +51,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArticlePOCO.cs" />
+    <Compile Include="BingApi\AnalyzeResult.cs" />
+    <Compile Include="BingApi\BingApiConnectorBase.cs" />
+    <Compile Include="BingApi\CustomSearch\CustomSearchConnector.cs" />
+    <Compile Include="BingApi\CustomSearch\CustomSearchConfig.cs" />
+    <Compile Include="BingApi\CustomSearch\CustomSearchRequestPOCO.cs" />
+    <Compile Include="BingApi\CustomSearch\CustomSearchResponsePOCO.cs" />
+    <Compile Include="BingApi\IRequestPOCO.cs" />
+    <Compile Include="BingApi\IResponsePOCO.cs" />
     <Compile Include="CognitiveServices\AnalyzeResult.cs" />
     <Compile Include="CognitiveServices\IRequestPOCO.cs" />
     <Compile Include="CognitiveServices\IResponsePOCO.cs" />
