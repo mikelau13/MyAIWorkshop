@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace ArticleDigestWorkshop.CognitiveServices
 {
+    [JsonObject("CognitiveServices")]
     public class AnalyzeResult
     {
         [JsonProperty("Request")]

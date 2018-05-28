@@ -39,7 +39,7 @@
             // 
             // _btnLoadArticles
             // 
-            this._btnLoadArticles.Location = new System.Drawing.Point(710, 13);
+            this._btnLoadArticles.Location = new System.Drawing.Point(710, 22);
             this._btnLoadArticles.Name = "_btnLoadArticles";
             this._btnLoadArticles.Size = new System.Drawing.Size(80, 22);
             this._btnLoadArticles.TabIndex = 1;
@@ -58,7 +58,7 @@
             // 
             // _txtConnectStr
             // 
-            this._txtConnectStr.Location = new System.Drawing.Point(20, 12);
+            this._txtConnectStr.Location = new System.Drawing.Point(20, 24);
             this._txtConnectStr.Name = "_txtConnectStr";
             this._txtConnectStr.Size = new System.Drawing.Size(686, 20);
             this._txtConnectStr.TabIndex = 3;

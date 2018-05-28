@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 using ArticleDigestWorkshop.CognitiveServices.TextAnalysticsApi;
 using ArticleDigestWorkshop.CognitiveServices;
+using ArticleDigestWorkshop.GoogleApi;
 using System.Text.RegularExpressions;
+using ArticleDigestWorkshop.GoogleApi.CustomSearch;
 
 namespace ArticleDigestWorkshop
 {
@@ -48,17 +43,40 @@ namespace ArticleDigestWorkshop
         {
             TextAnalysticsConnector textAnalyze = new TextAnalysticsConnector();
 
-            List<AnalyzeResult> results = new List<AnalyzeResult>();
+            List<GoogleApi.AnalyzeResult> results = new List<GoogleApi.AnalyzeResult>();
 
             for (int i = 0; i < ArticleList.Count; i++)
             {
-                TextAnalysticsRequestPOCO thisRequest = new TextAnalysticsRequestPOCO();
-                thisRequest.Documents.Add(new TextAnalysticsRequestDocument { Language = "en", Id = "1", Text = Regex.Replace(ArticleList[i].Title, "<.*?>", String.Empty) });
-                thisRequest.Documents.Add(new TextAnalysticsRequestDocument { Language = "en", Id = "2", Text = Regex.Replace(ArticleList[i].Body, "<.*?>", String.Empty) });
+                TextAnalysticsRequestPOCO txtAnaRequest = new TextAnalysticsRequestPOCO();
+                txtAnaRequest.Documents.Add(new TextAnalysticsRequestDocument { Language = "en", Id = "1", Text = Regex.Replace(ArticleList[i].Title, "<.*?>", String.Empty) });
+                txtAnaRequest.Documents.Add(new TextAnalysticsRequestDocument { Language = "en", Id = "2", Text = Regex.Replace(Regex.Replace(ArticleList[i].Body, "<.*?>", String.Empty), "&.*?;", String.Empty) });
 
-                results.Add(new AnalyzeResult {
-                    RequestObject = thisRequest
-                    , ResponseObject = textAnalyze.Analyze(thisRequest)
+                TextAnalysticsResponsePOCO txtAnaResponse = textAnalyze.Analyze(txtAnaRequest);
+
+                CognitiveServices.AnalyzeResult textAnalysticsResult = new CognitiveServices.AnalyzeResult
+                {
+                    RequestObject = txtAnaRequest,
+                    ResponseObject = txtAnaResponse
+                };
+
+                // ----------- Google Custom Search
+
+                CustomSearchConnector googleCustomSearch = new CustomSearchConnector();
+
+                string searchQ = googleCustomSearch.SearchQueryFromKeyPhrase(((TextAnalysticsResponsePOCO)textAnalysticsResult.ResponseObject).Documents);
+                CustomSearchRequestPOCO csRequest = new CustomSearchRequestPOCO();
+                csRequest.Query = searchQ;
+                csRequest.Num = 10;
+                csRequest.SiteSearch = "www.therecord.com"; // let's just hardcoding for now for testing purpose
+
+                CustomSearchResponsePOCO customSearchResponse = googleCustomSearch.DoCustomSearch(csRequest);
+
+                //------------
+
+                results.Add(new GoogleApi.AnalyzeResult
+                {
+                    CognitiveResult = textAnalysticsResult,
+                    ResponseObject = customSearchResponse
                 });
             }
 
@@ -66,7 +84,7 @@ namespace ArticleDigestWorkshop
         }
 
 
-        private void SaveAnalyzeResult(List<AnalyzeResult> resultToSave)
+        private void SaveAnalyzeResult(List<GoogleApi.AnalyzeResult> resultToSave)
         {
             string requestBody = Newtonsoft.Json.JsonConvert.SerializeObject(resultToSave);
 

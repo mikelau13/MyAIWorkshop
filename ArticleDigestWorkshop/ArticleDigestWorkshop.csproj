@@ -65,6 +65,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GoogleApi\AnalyzeResult.cs" />
     <Compile Include="GoogleApi\CustomSearch\CustomSearchConfig.cs" />
     <Compile Include="GoogleApi\CustomSearch\CustomSearchConnector.cs" />
     <Compile Include="GoogleApi\CustomSearch\CustomSearchRequestPOCO.cs" />
